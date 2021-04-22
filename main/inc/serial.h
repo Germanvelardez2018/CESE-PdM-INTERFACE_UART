@@ -43,5 +43,8 @@ void serial_task_input(void *pvParameter);
 
 
 
+void serial_print(const char *fmt, ...);
+
+
 
 #endif /* MAIN_INC_SERIAL_H_ */

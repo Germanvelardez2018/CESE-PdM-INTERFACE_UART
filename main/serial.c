@@ -16,9 +16,30 @@ static serial_app* _serial;
 
 
 
+
+
 void serial_out(char* string){
+
+
 	uart_write_bytes((*_serial).uart, (const char*) string, strlen(string));
 }
+static void vprint(const char *fmt, va_list argp) {
+	char string[100];
+	if (0 < vsprintf(string, fmt, argp)) // build string
+			{
+				serial_out(string);
+	}
+}
+
+void system_print(const char *fmt, ...) // custom printf() function
+{
+	va_list argp;
+	va_start(argp, fmt);
+	vprint(fmt, argp);
+	va_end(argp);
+}
+
+
 
 
 

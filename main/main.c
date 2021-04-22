@@ -60,7 +60,6 @@ system_init(&processor);
 
 	xTaskCreatePinnedToCore(serial_task_input, "serial in", 1024 * 30, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
 	xTaskCreatePinnedToCore(system_state_task, "system state", 1024 * 40, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
-	xTaskCreatePinnedToCore(system_task_out, "system out", 1024 * 20, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
 
 
 

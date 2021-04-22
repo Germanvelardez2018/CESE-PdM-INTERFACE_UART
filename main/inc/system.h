@@ -20,6 +20,15 @@
 #include "nvs.h"
 #include "mqtt_client.h"
 
+void get_baudrate();
+void set_baudrate();
+void get_wifi_params();
+void set_wifi_params();
+void set_mqtt_url();
+void get_mqtt_url();
+void system_print(const char *fmt, ...);
+
+
 struct memory_app{
 	 nvs_handle_t memory_handle;
 	 int8_t memory_initialized ;
@@ -50,14 +59,12 @@ typedef enum {
 } Event_t;
 
 
+
+
+
 typedef Event_t (*Runnable_t)();
 
-struct buffer{
-	char* text;
-	int8_t size;
-};
-
-typedef struct buffer buffer;
+typedef void (*Executable)( );
 
 
 
@@ -75,12 +82,13 @@ typedef struct {
 
 struct processor_app{
 	int8_t mode;
-	char* buffer_in;
 	uint8_t state_size;
 	Event_t ev;
 	State_t state_processor;
+	char* buffer_in;
+	int8_t fun_number;
 	QueueHandle_t userinterface_in;   // QUEUE del uart
-	QueueHandle_t userinterface_out;   // QUEUE del uart
+
 };
 
 typedef struct processor_app processor_app;
@@ -125,21 +133,10 @@ typedef struct display_app display_app;
 
 
 
-struct command_response{
-	int8_t remote_in;
-	int8_t serial_out;
-	int8_t mqtt_out;
-	char* command;
-	char* param_1;
-	char* param_2;
-	int32_t baud;
-	char* final_res;
 
-};
 
-void  extract_1_parameter(char* command);
-void  extract_2_parameter(char* command);
-void  extract_baudrate(char* command);
+
+
 void system_init();
 void system_task_out(void *pvParameter);
 void system_state_task(void *pvParameter);

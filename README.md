@@ -7,6 +7,8 @@
 # La posicion de la funcion en la tabla determina el fun_number del comando asociado
 
 
+```c
+
 functions_table[]={
 
 	    &get_baudrate,      ------>fun_number =0
@@ -16,21 +18,22 @@ functions_table[]={
 	    &get_mqtt_url,      ------>fun_number =4
 	    &set_mqtt_url,      ------>fun_number =5
 };
+```
 
 
 # Formato de los comandos
 Se soportan 3 tipos de comandos:
 
-1) comandos sin parametros ( funciones GET)
+## comandos sin parametros ( funciones GET)
 
  comando = "fun_number+"
  *no olvidar el signo '+'
 
- 2) comandos con un solo parametro (funciones SET)
+##  comandos con un solo parametro (funciones SET)
 
  comando = "fun_number+parametro1+" 
 
- 3) comandos con dos parametros (funciones SET)
+##  comandos con dos parametros (funciones SET)
 
  comando = "fun_number+parametro1+parameter2"
 
@@ -49,8 +52,9 @@ Se soportan 3 tipos de comandos:
  #Se recomienda utilizar las funciones de soporte para extraer parametros en caso de necesitarlos.
  Estas funciones solo serviran si se cumple el formato anteriormente explicado.
 
-
+ ```c
     static char* extract_parameters_str(char *buffer_in, int num_param)
     Sirve para extraer el primer o el segundo parametro string de una commando recibido
     static int32_t extract_int32()
     sirve para extraerl el primer y unico datos de un comando.Utilizar cuando se requiera setear valores int
+    ```

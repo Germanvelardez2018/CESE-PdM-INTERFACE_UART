@@ -55,11 +55,11 @@ Se soportan 3 tipos de comandos:
  ```c
     static char* extract_parameters_str(char *buffer_in, int num_param)
  ``` 
-    Sirve para extraer el primer o el segundo parametro string de una commando recibido
+    Sirve para extraer el parametro uno o  o el  parametro   de un buffer string  recibido
  
  
  ```c
     static int32_t extract_int32()
  ```
-    sirve para extraerl el primer y unico datos de un comando.Utilizar cuando se requiera setear valores int
+    sirve para extraerl el primero y unico dato de un buffer string recibido. Utilizar solo  cuando se requiera setear valores int.
     

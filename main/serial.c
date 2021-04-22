@@ -15,11 +15,6 @@ static serial_app* _serial;
 
 
 
-void serial_print(char* string){
-	xQueueSendToBack((*_serial).serial_out, &string, 500/portTICK_RATE_MS);
-
-}
-
 
 void serial_out(char* string){
 	uart_write_bytes((*_serial).uart, (const char*) string, strlen(string));
@@ -93,22 +88,22 @@ void serial_task_input(void *pvParameter){
 				break;
 
 			case UART_FIFO_OVF:
-				serial_print("hw fifo overflow");
+				serial_out("hw fifo overflow");
 				uart_flush_input((*_serial).uart);
 				xQueueReset((*_serial).serial_in);
 				break;
 
 			case UART_BUFFER_FULL:
-				serial_print("ring buffer full");
+				serial_out("ring buffer full");
 				uart_flush_input((*_serial).uart);
 				xQueueReset((*_serial).serial_in);
 				break;
 
 			case UART_BREAK:
-				serial_print("uart rx break");
+				serial_out("uart rx break");
 				break;
 			case UART_PARITY_ERR:
-				serial_print("uart parity error");
+				serial_out("uart parity error");
 				break;
 
 			case UART_FRAME_ERR:
@@ -129,9 +124,8 @@ void serial_task_input(void *pvParameter){
 					uart_read_bytes((*_serial).uart, pat, PATTERN_CHR_NUM,200 / portTICK_PERIOD_MS);
 					uart_flush((*_serial).uart);
 					com[pos] = '\0';
-					serial_out(com);
 					printf("comando recibido: %s",com);
-				// implementar urgente	ksi_processor_send_queue(com);
+					system_send_queue_input(com);
 				}
 				break;
 				//Others

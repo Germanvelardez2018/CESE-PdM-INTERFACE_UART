@@ -55,9 +55,13 @@ void app_main(void)
 
 	serial_init(&serial);
 	printf("el serrial esta inicializado'n");
-	serial_out("INICIANDO COLA OUTPUT\n");
 
-	xTaskCreatePinnedToCore(serial_task_input, "serial in", 1024 * 50, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
+system_init(&processor);
+
+	xTaskCreatePinnedToCore(serial_task_input, "serial in", 1024 * 30, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
+	xTaskCreatePinnedToCore(system_state_task, "system state", 1024 * 40, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
+	xTaskCreatePinnedToCore(system_task_out, "system out", 1024 * 20, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
+
 
 
 	while (true) {

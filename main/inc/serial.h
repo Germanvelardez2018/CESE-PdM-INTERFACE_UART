@@ -39,7 +39,6 @@ void serial_init( serial_app* serial_app);
 void serial_deinit();
 void serial_load_baudrate(); //param from flash memory
 void serial_out(char* string);
-void serial_print(char* string);
 void serial_task_input(void *pvParameter);
 
 

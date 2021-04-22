@@ -75,7 +75,7 @@ typedef struct {
 
 struct processor_app{
 	int8_t mode;
-	buffer buffer_in;
+	char* buffer_in;
 	uint8_t state_size;
 	Event_t ev;
 	State_t state_processor;
@@ -137,6 +137,13 @@ struct command_response{
 
 };
 
+void  extract_1_parameter(char* command);
+void  extract_2_parameter(char* command);
+void  extract_baudrate(char* command);
+void system_init();
+void system_task_out(void *pvParameter);
+void system_state_task(void *pvParameter);
+void system_send_queue_input(char * command);
 
 
 #endif /* MAIN_INC_SYSTEM_H_ */

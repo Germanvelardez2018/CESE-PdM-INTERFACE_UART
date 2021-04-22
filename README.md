@@ -4,21 +4,21 @@
 
 # Se utilizo una tabla para las funciones que ejecutan los comandos
 
-#La posicion de la funcion en la tabla determina el fun_number del comando asociado
-# ejemplo
+# La posicion de la funcion en la tabla determina el fun_number del comando asociado
+
 
 functions_table[]={
 
-		&get_baudrate,      ------>fun_number =0
+	    &get_baudrate,      ------>fun_number =0
 	    &set_baudrate,      ------>fun_number =1
-		&get_wifi_params,   ------>fun_number =2
+	    &get_wifi_params,   ------>fun_number =2
 	    &set_wifi_params,   ------>fun_number =3
 	    &get_mqtt_url,      ------>fun_number =4
 	    &set_mqtt_url,      ------>fun_number =5
 };
 
 
-# formato de los comandos
+# Formato de los comandos
 Se soportan 3 tipos de comandos:
 
 1) comandos sin parametros ( funciones GET)

@@ -130,9 +130,9 @@ void set_mqtt_url() {
 
 static Executable functions_table[]={
 
-		&get_baudrate,
+	    &get_baudrate,
 	    &set_baudrate,
-		&get_wifi_params,
+	    &get_wifi_params,
 	    &set_wifi_params,
 	    &get_mqtt_url,
 	    &set_mqtt_url,

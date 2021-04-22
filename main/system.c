@@ -65,19 +65,42 @@ void set_baudrate(){
 
 	}
 }
-void get_wifi_params(){
+void get_wifi_params() {
 	system_print("FUNCION: GET WiFi PARAMS\n");
-	system_print("--WiFi-ID: mi_wifi\n");
-	system_print("--WiFi-PASSWORD: *********\n");
+	char *p_wifi_id = ksi_memory_get_wifiid();
+	if (p_wifi_id != NULL) {
+		system_print("--WiFi-ID: %s\n", p_wifi_id);
+	} else {
+		system_print("--WiFi-ID: UNDEFINED\n");
 
+	}
+	char *p_wifi_password = ksi_memory_get_wifipass();
+	if (p_wifi_password != NULL) {
+		system_print("--WiFi-PASSWORD: %s\n", p_wifi_password);
+	} else {
+		system_print("--WiFi-PASSWORD: UNDEFINED\n");
 
-
+	}
 
 }
 void set_wifi_params(){
 	system_print("FUNCION: SET WiFi PARAMS\n");
-	system_print("--PARAMETER 1 %s\n", extract_parameters_str((*_pro).buffer_in,1));
-	system_print("--PARAMETER 2 %s\n",  extract_parameters_str((*_pro).buffer_in,2));
+	char* param_1 = extract_parameters_str((*_pro).buffer_in,1);
+	if(param_1 == NULL){
+		system_print("ERROR PARAMETERS'n");
+		return;
+	}
+	char* param_2 = extract_parameters_str((*_pro).buffer_in,2);
+	if(param_2 == NULL){
+			system_print("ERROR PARAMETERS'n");
+			return;
+		}
+	ksi_memory_set_wifiid(param_1);
+	ksi_memory_set_wifipass(param_2);
+	system_print("--PARAMETER 1 %s\n", param_1);
+	system_print("--PARAMETER 2 %s\n",  param_2);
+
+
 
 
 }

@@ -211,30 +211,20 @@ void system_init (processor_app *procesor){
 
 void system_state_task(void *pvParameter) {
 	for (;;) {
-			(*_pro).ev =
-					xQueueReceive((*_pro).userinterface_in, (&((*_pro).buffer_in)),
-							(portTickType) portMAX_DELAY) ?
-							EVENT_NEXT_COMMAND : EVENT_EMPTY_QUEUE;
-
-
-			if ((*_pro).ev == EVENT_NEXT_COMMAND) {
-
-				for (uint8_t i = 0; i < (*_pro).state_size; i++) {
-
-					if (fsmTable[i].current == (*_pro).state_processor
-							&& fsmTable[i].event == (*_pro).ev) {
-
+		   (*_pro).ev =xQueueReceive((*_pro).userinterface_in, (&((*_pro).buffer_in)),(portTickType) portMAX_DELAY) 
+			   ?VENT_NEXT_COMMAND : EVENT_EMPTY_QUEUE;
+		   if ((*_pro).ev == EVENT_NEXT_COMMAND) {
+		     for (uint8_t i = 0; i < (*_pro).state_size; i++) {
+				if (fsmTable[i].current == (*_pro).state_processor
+						&& fsmTable[i].event == (*_pro).ev) {
 						if (fsmTable[i].action != NULL) {
 							(*_pro).ev = (Event_t) (*(fsmTable[i].action))(); // start command processing
-
 						}
 						(*_pro).state_processor = fsmTable[i].next;
 					}
 				}
-
 			}
 			vTaskDelay(200 / portTICK_PERIOD_MS);
-
 		}
 }
 

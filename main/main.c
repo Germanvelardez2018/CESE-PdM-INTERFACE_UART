@@ -2,8 +2,9 @@
 #include "freertos/task.h"
 
 
-#include "system.h"
 
+
+#include "system.h"
 #include "serial.h"
 #include "memory_store.c"
 
@@ -16,8 +17,6 @@
 static processor_app processor ={
 		.mode=0,
 		.state_processor=WAITING,
-
-
 };
 
 static serial_app serial = {
@@ -39,12 +38,7 @@ static mqtt_app mqtt={
 };
 
 
-static display_app display={};
-//Functions
-
-
-
-
+static display_app display={};   //future implementation
 
 
 
@@ -53,16 +47,14 @@ void app_main(void)
 	printf("iniciamos el programa\n");
 
 	ksi_memory_init(&serial, &wifi, &mqtt);
-	ksi_memory_load();
+	ksi_memory_load();  // load states of the structs
 
-	serial_init(&serial);
+	serial_init(&serial);   //starting the serial port
 
-	system_init(&processor);
+	system_init(&processor); //starting the user interfaces
 
 	xTaskCreatePinnedToCore(serial_task_input, "serial in", 1024 * 30, NULL, 1,NULL, 1);   //Uart interface esta implementada en UART2.
 	xTaskCreatePinnedToCore(system_state_task, "system state", 1024 * 40, NULL, 1,NULL, 1);   //Uart interface esta implementada en UART2.
-
-
 
 	while (true) {
 

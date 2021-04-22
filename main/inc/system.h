@@ -118,7 +118,6 @@ struct mqtt_app {
 	char *mqtt_tag_sub;
 	esp_mqtt_client_handle_t client;
 	int8_t mqtt_state;
-	wifi_app wifi_app;
 };
 
 typedef struct mqtt_app mqtt_app;

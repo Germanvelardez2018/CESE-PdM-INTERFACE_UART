@@ -1,11 +1,56 @@
-ESP-IDF template app
-====================
 
-This is a template application to be used with [Espressif IoT Development Framework](https://github.com/espressif/esp-idf).
+#Primeras implementacion de interfaz de usuario mediante UART en ESP-32
 
-Please check [ESP-IDF docs](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for getting started instructions.
 
-*Code in this repository is in the Public Domain (or CC0 licensed, at your option.)
-Unless required by applicable law or agreed to in writing, this
-software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-CONDITIONS OF ANY KIND, either express or implied.*
+# Se utilizo una tabla para las funciones que ejecutan los comandos
+
+#La posicion de la funcion en la tabla determina el fun_number del comando asociado
+# ejemplo
+
+functions_table[]={
+
+		&get_baudrate,      ------>fun_number =0
+	    &set_baudrate,      ------>fun_number =1
+		&get_wifi_params,   ------>fun_number =2
+	    &set_wifi_params,   ------>fun_number =3
+	    &get_mqtt_url,      ------>fun_number =4
+	    &set_mqtt_url,      ------>fun_number =5
+};
+
+
+# formato de los comandos
+Se soportan 3 tipos de comandos:
+
+1) comandos sin parametros ( funciones GET)
+
+ comando = "fun_number+"
+ *no olvidar el signo '+'
+
+ 2) comandos con un solo parametro (funciones SET)
+
+ comando = "fun_number+parametro1+" 
+
+ 3) comandos con dos parametros (funciones SET)
+
+ comando = "fun_number+parametro1+parameter2"
+
+
+ # Todos los comandos deben terminar con La inclusion de la secuencia 'CCC'
+ Esto es necesario porque se implementaron funciones de deteccion 
+ de patrones mediante UART.
+ En caso de no agregar la secuencia el comando sera invalido y la interfaz lo notificara
+
+
+  
+
+# Agregar nuevas funciones:
+ Para implemenarlas estan deben tener el formato de Executable  return void  params (char*)
+ Se deben agregar en la tabla functions_table
+ #Se recomienda utilizar las funciones de soporte para extraer parametros en caso de necesitarlos.
+ Estas funciones solo serviran si se cumple el formato anteriormente explicado.
+
+
+    static char* extract_parameters_str(char *buffer_in, int num_param)
+    Sirve para extraer el primer o el segundo parametro string de una commando recibido
+    static int32_t extract_int32()
+    sirve para extraerl el primer y unico datos de un comando.Utilizar cuando se requiera setear valores int

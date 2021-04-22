@@ -12,26 +12,19 @@
 
 static serial_app* _serial;
 
-
-
-
-
-
-
-void serial_out(char* string){
-
-
+void serial_out(char *string) {
 	uart_write_bytes((*_serial).uart, (const char*) string, strlen(string));
 }
+
 static void vprint(const char *fmt, va_list argp) {
 	char string[100];
 	if (0 < vsprintf(string, fmt, argp)) // build string
 			{
-				serial_out(string);
+		serial_out(string);
 	}
 }
 
-void system_print(const char *fmt, ...) // custom printf() function
+void system_print(const char *fmt, ...) // custom print() function for the system
 {
 	va_list argp;
 	va_start(argp, fmt);
@@ -39,14 +32,9 @@ void system_print(const char *fmt, ...) // custom printf() function
 	va_end(argp);
 }
 
-
-
-
-
-
-void serial_load_baudrate(){
-	printf("se cargo baud en hardware: %d\n",(*_serial).baudrate);
-	uart_set_baudrate((*_serial).uart,(*_serial).baudrate);
+void serial_load_baudrate() {
+	printf("se cargo baud en hardware: %d\n", (*_serial).baudrate);
+	uart_set_baudrate((*_serial).uart, (*_serial).baudrate);
 }
 
 
@@ -70,24 +58,16 @@ void serial_init(serial_app *serial_app) {
 			uart_driver_install((*_serial).uart,(const int)2*BUF_RX,(const int)2*BUF_TX,20,&((*_serial).serial_in),0));
 	//Set uart pattern detect function.
 	uart_enable_pattern_det_baud_intr((*_serial).uart, PATTERN_CHR,
-			PATTERN_CHR_NUM, 9, 0, 0); // pattern is LF
+	PATTERN_CHR_NUM, 9, 0, 0); // pattern is LF
 	//Reset the pattern queue length to record at most 20 pattern positions.
-	uart_pattern_queue_reset((*_serial).uart, (*_serial).queue_elements); //Se resetea la cola de posiciones en 20
-
-
-	// start entry and exit queues
-
-	serial_out("mensaje fin de configuracion aurt\n");
-
-
+	uart_pattern_queue_reset((*_serial).uart, (*_serial).queue_elements);
 }
 
 void serial_deinit() {
 	uart_driver_delete((*_serial).uart);
 }
 
-
-void serial_task_input(void *pvParameter){
+void serial_task_input(void *pvParameter) {
 
 	printf("iniciando tarea input serrial\n");
 
@@ -99,12 +79,14 @@ void serial_task_input(void *pvParameter){
 	for (;;) {
 		if (xQueueReceive((*_serial).serial_in, (void*) &event,
 				(portTickType) portMAX_DELAY))
-		printf("el evento es: %d\n",event.type);
+			printf("el evento es: %d\n", event.type);
 		{
 			switch (event.type) {
 			case UART_DATA:
-				uart_read_bytes((*_serial).uart, input_data, event.size, portMAX_DELAY); //Leo un comando
-				uart_write_bytes((*_serial).uart, (const char*) input_data, event.size);
+				uart_read_bytes((*_serial).uart, input_data, event.size,
+						portMAX_DELAY); //Leo un comando
+				uart_write_bytes((*_serial).uart, (const char*) input_data,
+						event.size);
 				serial_out(" -> No es un comando valido \n");
 				break;
 
@@ -139,13 +121,15 @@ void serial_task_input(void *pvParameter){
 				} else {
 
 					com = (char*) malloc(pos + 1);
-					uart_read_bytes((*_serial).uart, com, pos, 100 / portTICK_PERIOD_MS); //lectura del comando
+					uart_read_bytes((*_serial).uart, com, pos,
+							100 / portTICK_PERIOD_MS); //lectura del comando
 					uint8_t pat[PATTERN_CHR_NUM + 1];
 					memset(pat, 0, sizeof(pat)); //sive para agregar final a cadenas
-					uart_read_bytes((*_serial).uart, pat, PATTERN_CHR_NUM,200 / portTICK_PERIOD_MS);
+					uart_read_bytes((*_serial).uart, pat, PATTERN_CHR_NUM,
+							200 / portTICK_PERIOD_MS);
 					uart_flush((*_serial).uart);
 					com[pos] = '\0';
-					printf("comando recibido: %s",com);
+					printf("comando recibido: %s", com);
 					system_send_queue_input(com);
 				}
 				break;
@@ -157,8 +141,6 @@ void serial_task_input(void *pvParameter){
 		}  //if
 
 	} //for
-
-
 }
 
 

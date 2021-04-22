@@ -20,9 +20,6 @@ static memory_app memory={
 		 .memory_handle=NULL
 };
 
-
-
-
 static void ksi_memory_open() {
 	esp_err_t err = nvs_open(CONFIG_REG, NVS_READWRITE,
 			&(memory.memory_handle));
@@ -92,7 +89,7 @@ void ksi_memory_set_mqtturl(char *url) {
 
 		if (err != ESP_OK) {
 			printf("Error al conectarse a red %s\n", url);
-			(*_m_mqtt).mqtt_url=NULL;
+			(*_m_mqtt).mqtt_url = NULL;
 
 		} else {
 			printf("Se configuro MQTT url: %s\n", url);
@@ -113,7 +110,7 @@ void ksi_memory_set_mqtt_pub(char *tag_pub) {
 
 		if (err != ESP_OK) {
 			printf("Error AL GUARDAR TAG PUB: %s\n", tag_pub);
-			(*_m_mqtt).mqtt_tag_pub=NULL;
+			(*_m_mqtt).mqtt_tag_pub = NULL;
 		} else {
 			printf("Se configuro MQTT TAG PUB: %s\n", tag_pub);
 			strcpy((*_m_mqtt).mqtt_tag_pub, tag_pub);
@@ -133,7 +130,7 @@ void ksi_memory_set_mqtt_sub(char *tag_sub) {
 
 		if (err != ESP_OK) {
 			printf("Error AL GUARDAR TAG SUB: %s\n", tag_sub);
-			(*_m_mqtt).mqtt_tag_sub=NULL;
+			(*_m_mqtt).mqtt_tag_sub = NULL;
 		} else {
 			printf("Se configuro MQTT TAG SUB: %s\n", tag_sub);
 			strcpy((*_m_mqtt).mqtt_tag_sub, tag_sub);
@@ -327,34 +324,39 @@ void ksi_memory_set_mqtt_state(int8_t state) {
 
 }
 
- void ksi_memory_load() {
+void ksi_memory_load() {
 
-//load seial
-	ksi_memory_get_baud();
-//load wifi
-	ksi_memory_get_wifiid();
-	ksi_memory_get_wifipass();
-	ksi_memory_get_wifi_state();
-//load mqtt
-	ksi_memory_get_mqtturl();
-	ksi_memory_get_mqtt_pub();
-	ksi_memory_get_mqtt_sub();
-	printf("finalizamos carga de datos\n");
+	if (memory.memory_initialized) {
+		//load serial_app struct
+		ksi_memory_get_baud();
+		//load wifi_app struct
+		ksi_memory_get_wifiid();
+		ksi_memory_get_wifipass();
+		ksi_memory_get_wifi_state();
+		//load mqtt_app struct
+		ksi_memory_get_mqtturl();
+		ksi_memory_get_mqtt_pub();
+		ksi_memory_get_mqtt_sub();
+
+		printf("Carga de memoria completa\n");
+
+	} else {
+		printf("error en memory, usar valores defautl\n");
+	}
 }
 
-void ksi_memory_init(serial_app *serial, wifi_app *wifi, mqtt_app *mqtt){
-	_m_serial= serial;
+void ksi_memory_init(serial_app *serial, wifi_app *wifi, mqtt_app *mqtt) {
+	_m_serial = serial;
 	_m_wifi = wifi;
 	_m_mqtt = mqtt;
 	esp_err_t ret = nvs_flash_init();
-		if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-			//	ESP_ERROR_CHECK(nvs_flash_erase());
-			//	ret = nvs_flash_init();
-			system_print("ERROR GRAVE DE MEMORIA\n");
-		}
-		ESP_ERROR_CHECK(ret);
-		memory.memory_initialized = 1;
-		//ksi_memory_load();
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+		//	ESP_ERROR_CHECK(nvs_flash_erase());
+		//	ret = nvs_flash_init();
+		system_print("ERROR GRAVE DE MEMORIA\n");
+	}
+	ESP_ERROR_CHECK(ret);
+	memory.memory_initialized = 1;
 
 }
 

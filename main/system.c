@@ -2,7 +2,7 @@
  * system.c
  *
  *  Created on: 21 abr. 2021
- *      Author: root
+ *      Author: German Velardez
  */
 
 
@@ -39,7 +39,7 @@ static char* extract_parameters_str(char *buffer_in, int num_param) {
 
 }
 
-static int32_t extract_baudrate() {
+static int32_t extract_int32() {
 	char *param = (*_pro).buffer_in + 2; //offset   1+baudrate   fun_number=1 is setbaudrate
 	int32_t param_value = (int32_t) strtol(param, NULL, 10);
 	return param_value;
@@ -52,9 +52,10 @@ void get_baudrate(){
 	system_print("BAUDRATE:%d\n",ksi_memory_get_baud());
 
 }
+
 void set_baudrate(){
 	system_print("FUNCION: SET BAUDRATE\n");
-	int32_t baudrate  =extract_baudrate();   // if extrac is error, than response.baud=0 ignore;
+	int32_t baudrate  =extract_int32();   // if extrac is error, than response.baud=0 ignore;
 	if(baudrate ==0){
 		system_print("FUNCION: SET BAUDRATE ERROR, PARAM IS INVALID \n");
 	}
@@ -65,6 +66,7 @@ void set_baudrate(){
 
 	}
 }
+
 void get_wifi_params() {
 	system_print("FUNCION: GET WiFi PARAMS\n");
 	char *p_wifi_id = ksi_memory_get_wifiid();
@@ -83,40 +85,47 @@ void get_wifi_params() {
 	}
 
 }
-void set_wifi_params(){
+
+void set_wifi_params() {
 	system_print("FUNCION: SET WiFi PARAMS\n");
-	char* param_1 = extract_parameters_str((*_pro).buffer_in,1);
-	if(param_1 == NULL){
+	char *param_1 = extract_parameters_str((*_pro).buffer_in, 1);
+	if (param_1 == NULL) {
 		system_print("ERROR PARAMETERS'n");
 		return;
 	}
-	char* param_2 = extract_parameters_str((*_pro).buffer_in,2);
-	if(param_2 == NULL){
-			system_print("ERROR PARAMETERS'n");
-			return;
-		}
+	char *param_2 = extract_parameters_str((*_pro).buffer_in, 2);
+	if (param_2 == NULL) {
+		system_print("ERROR PARAMETERS'n");
+		return;
+	}
 	ksi_memory_set_wifiid(param_1);
 	ksi_memory_set_wifipass(param_2);
 	system_print("--PARAMETER 1 %s\n", param_1);
-	system_print("--PARAMETER 2 %s\n",  param_2);
-
-
-
+	system_print("--PARAMETER 2 %s\n", param_2);
 
 }
 
-void get_mqtt_url(){
+void get_mqtt_url() {
 	system_print("FUNCION: GET MQTT URL\n");
-	system_print("--MQTT-URL: www.mqtt.org\n");
+	char *p_mqtt_url = ksi_memory_get_mqtturl();
+	if (p_mqtt_url != NULL) {
+		system_print("--MQTT-URL: %s\n", p_mqtt_url);
+	} else {
+		system_print("--MQTT-URL: UNDEFINED\n");
+
+	}
 }
-void set_mqtt_url(){
+
+void set_mqtt_url() {
 	system_print("FUNCION: SET MQTT URL\n");
-	system_print("--PARAMETER 1: %s\n",extract_parameters_str((*_pro).buffer_in,1));
-
+	char *param_1 = extract_parameters_str((*_pro).buffer_in, 1);
+	if (param_1 == NULL) {
+		system_print("ERROR PARAMETERS'n");
+		return;
+	}
+	ksi_memory_set_mqtturl(param_1);
+	system_print("--PARAMETER 1: %s\n", param_1);
 }
-
-
-
 
 
 static Executable functions_table[]={
@@ -127,19 +136,21 @@ static Executable functions_table[]={
 	    &set_wifi_params,
 	    &get_mqtt_url,
 	    &set_mqtt_url,
-
 };
 
 
-void system_send_queue_input(char* buffer_in)  // for user interface mqtt
+
+void system_send_queue_input(char* buffer_in)
 {
 	xQueueSendToBack((*_pro).userinterface_in, &(buffer_in),(portTickType) portMAX_DELAY);
-	}
+}
 
 
 
 static int8_t get_function(char* buffer_in){
-	// command -->   "fun_number+param1+param2   or fun_number only
+	// command -->   "fun_number+param1+param2 (SET FUNCTION WITH TWO PARAMETERS STRINGS)
+	// command -->   "fun_number+param1+ 	   (SET FUNCTION WITH ONE PARAMETER  STRINGS)
+	// command -->   "fun_number+              (GET FUNCTION)
 
 	char* rest = strcasestr(buffer_in,"+");
 	int size_funct = rest -buffer_in ;
@@ -158,14 +169,17 @@ static void readCommand(char *buffer_in) {
 
 }
 
-static void EndingResponse() { // Aqui irian funciones de cierre a los comandos realizados
+static void EndingResponse() { // put here your ending functions
 	system_print("Finalizando la respuesta\n ");
 }
 
+   //Process the command into the buffer
 static Event_t ProcessCommand() {
 	readCommand((*_pro).buffer_in);
 	return EVENT_REPONDED;
 }
+
+
 
 static Event_t ProcessFinally() {
 	EndingResponse();
@@ -190,9 +204,7 @@ void processor_init() //Modo 0 interfaz usuario pc , modo 1 interfaz microcontro
 void system_init (processor_app *procesor){
 	_pro = procesor;
 	processor_init(0);
-	(*_pro).userinterface_in = xQueueCreate(10, sizeof(char*)); // 10 mensaje de 20 char cada uno
-
-
+	(*_pro).userinterface_in = xQueueCreate(10, sizeof(char*)); // ten elements in the input queue
 }
 
 
@@ -213,7 +225,8 @@ void system_state_task(void *pvParameter) {
 							&& fsmTable[i].event == (*_pro).ev) {
 
 						if (fsmTable[i].action != NULL) {
-							(*_pro).ev = (Event_t) (*(fsmTable[i].action))(); // supuestemnte estoy llamoando al callback
+							(*_pro).ev = (Event_t) (*(fsmTable[i].action))(); // start command processing
+
 						}
 						(*_pro).state_processor = fsmTable[i].next;
 					}

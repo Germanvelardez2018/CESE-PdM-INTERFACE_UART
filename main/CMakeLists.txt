@@ -5,7 +5,8 @@ set(COMPONENT_PRIV_REQUIRES )
 set(COMPONENT_SRCS 
 "main.c"
 "system.c"
-"serial.c")
+"serial.c"
+"memory_store.c")
 set(COMPONENT_ADD_INCLUDEDIRS "./inc")
 
 register_component()

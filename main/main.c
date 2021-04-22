@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include "serial.h"
-
+#include "memory_store.c"
 
 
 
@@ -52,14 +52,15 @@ void app_main(void)
 {
 	printf("iniciamos el programa\n");
 
+	ksi_memory_init(&serial, &wifi, &mqtt);
+	ksi_memory_load();
 
 	serial_init(&serial);
-	printf("el serrial esta inicializado'n");
 
-system_init(&processor);
+	system_init(&processor);
 
-	xTaskCreatePinnedToCore(serial_task_input, "serial in", 1024 * 30, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
-	xTaskCreatePinnedToCore(system_state_task, "system state", 1024 * 40, NULL, 1,NULL, 0);   //Uart interface esta implementada en UART2.
+	xTaskCreatePinnedToCore(serial_task_input, "serial in", 1024 * 30, NULL, 1,NULL, 1);   //Uart interface esta implementada en UART2.
+	xTaskCreatePinnedToCore(system_state_task, "system state", 1024 * 40, NULL, 1,NULL, 1);   //Uart interface esta implementada en UART2.
 
 
 

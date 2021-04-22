@@ -44,7 +44,7 @@ void system_print(const char *fmt, ...) // custom printf() function
 
 
 
-void serial_load_baud(){
+void serial_load_baudrate(){
 	printf("se cargo baud en hardware: %d\n",(*_serial).baudrate);
 	uart_set_baudrate((*_serial).uart,(*_serial).baudrate);
 }

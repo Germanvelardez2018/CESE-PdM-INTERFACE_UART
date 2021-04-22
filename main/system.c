@@ -8,6 +8,7 @@
 
 #include "system.h"
 #include "serial.h"
+#include "memory_store.h"
 
 static processor_app* _pro;
 
@@ -23,7 +24,7 @@ static processor_app* _pro;
 
 static char* extract_parameters_str(char *buffer_in, int num_param) {
 
-	int space = (*_pro).fun_number > 9 ? 2 : 1;
+	int space = (*_pro).fun_number > 9 ? 2 : 1;        //size     '9'    '10'
 	char *params = buffer_in + space + 1; //offset fun_number
 	char *param_2 = strcasestr(params, "+");  //pass empezara con +,borrar
 	int8_t len_param_1 = param_2 - params;
@@ -48,7 +49,7 @@ static int32_t extract_baudrate() {
 void get_baudrate(){
 	system_print("FUNCION: GET BAUDRATE\n");
 	//leer desde flash baudrate almacenado
-	system_print("BAUDRATE:9600\n");
+	system_print("BAUDRATE:%d\n",ksi_memory_get_baud());
 
 }
 void set_baudrate(){
@@ -59,6 +60,9 @@ void set_baudrate(){
 	}
 	else{
 		system_print("FUNCION: SET BAUDRATE:%d\n",baudrate);
+		vTaskDelay(500 / portTICK_PERIOD_MS);
+		ksi_memory_set_baud(baudrate);
+
 	}
 }
 void get_wifi_params(){
@@ -104,7 +108,7 @@ static Executable functions_table[]={
 };
 
 
-void system_send_queue_input(char* buffer_in)
+void system_send_queue_input(char* buffer_in)  // for user interface mqtt
 {
 	xQueueSendToBack((*_pro).userinterface_in, &(buffer_in),(portTickType) portMAX_DELAY);
 	}
@@ -167,8 +171,6 @@ void system_init (processor_app *procesor){
 
 
 }
-
-
 
 
 

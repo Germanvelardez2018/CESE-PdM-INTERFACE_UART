@@ -27,7 +27,7 @@ Se soportan 3 tipos de comandos:
 ## comandos sin parametros ( funciones GET)
 
  comando = "fun_number+"
- *no olvidar el signo '+'
+                           *no olvidar el signo '+'
 
 ##  comandos con un solo parametro (funciones SET)
 

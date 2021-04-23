@@ -25,18 +25,19 @@ functions_table[]={
 Se soportan 3 tipos de comandos:
 
 ## comandos sin parametros ( funciones GET)
-
- comando = "fun_number+"
-                           *no olvidar el signo '+'
-
+```c
+ comando = "fun_number+"   
+ ```
+ ###*no olvidar el signo '+'
+```
 ##  comandos con un solo parametro (funciones SET)
-
+```c
  comando = "fun_number+parametro1+" 
-
+```
 ##  comandos con dos parametros (funciones SET)
-
+```c
  comando = "fun_number+parametro1+parameter2"
-
+```
 
  # Todos los comandos deben terminar con La inclusion de la secuencia 'CCC'
  Esto es necesario porque se implementaron funciones de deteccion 
